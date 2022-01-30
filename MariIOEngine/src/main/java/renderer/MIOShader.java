@@ -1,8 +1,6 @@
 package renderer;
 
-import utils.DefaultConstants;
 import utils.Logger;
-import utils.platform.SpecialCharacters;
 
 import java.io.IOException;
 import java.nio.file.Files;

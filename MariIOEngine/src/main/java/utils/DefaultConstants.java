@@ -29,5 +29,6 @@ public final class DefaultConstants {
 
     public static final String SETTINGS_PATH = "";
 
-    public static final ETargetPlatform TARGET_PLATFORM = ETargetPlatform.Windows;
+    // Target platform selection
+    public static final ETargetPlatform TARGET_PLATFORM = ETargetPlatform.Linux;
 }

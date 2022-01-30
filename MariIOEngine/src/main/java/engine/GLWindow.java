@@ -117,6 +117,7 @@ public class GLWindow {
         glfwSetMouseButtonCallback(glfwWindowId, MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(glfwWindowId, MouseListener::mouseScrollCallback);
         glfwSetKeyCallback(glfwWindowId, KeyListener::keyCallback);
+        // TODO: Create Joystick or Gamepad callback
 
         // OpenGL context
         glfwMakeContextCurrent(glfwWindowId);
@@ -131,6 +132,7 @@ public class GLWindow {
         // Binds for OpenGL (on C-Language)
         GL.createCapabilities();
 
+        // TODO: Move this logic to game instance
         // Move to main scene
         changeScene(DefaultConstants.START_SCENE);
     }
