@@ -30,8 +30,7 @@ public class MIOShader {
     private static final String FRAGMENT_TYPE = "fragment";
 
     public MIOShader(String filePath) {
-        SpecialCharacters characters = SpecialCharacters.getInstance();
-        String newLine = characters.newLine();
+        String newLine = System.lineSeparator();
         this.filePath = filePath;
 
         try {

@@ -11,9 +11,4 @@ public class SpecialCharacters {
 
         return SpecialCharacters.instance;
     }
-
-    public String newLine() {
-        // TODO: Сделать выдачу специальных символов относительно операционной системы
-        return "\r\n";
-    }
 }
