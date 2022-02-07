@@ -3,7 +3,7 @@ package game.utils;
 import engine.Scene;
 import game.LevelEditorScene;
 import game.LevelScene;
-import utils.enums.EScene;
+import utils.enums.Scenes;
 
 public class SceneLinking {
     private static SceneLinking instance = null;
@@ -17,7 +17,7 @@ public class SceneLinking {
         return instance;
     }
 
-    public Scene getScene(EScene sceneIndex) {
+    public Scene getScene(Scenes sceneIndex) {
         switch (sceneIndex) {
             case LEVEL_EDITOR: return new LevelEditorScene();
             case LEVEL: return new LevelScene();

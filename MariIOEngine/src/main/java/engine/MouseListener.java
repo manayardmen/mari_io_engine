@@ -21,16 +21,16 @@ public class MouseListener {
     private boolean isDragging;
 
     private MouseListener() {
-        scrollX = 0.0;
-        scrollY = 0.0;
+        this.scrollX = 0.0;
+        this.scrollY = 0.0;
 
-        lastX = 0.0;
-        lastY = 0.0;
+        this.lastX = 0.0;
+        this.lastY = 0.0;
 
-        xPos = 0.0;
-        yPos = 0.0;
+        this.xPos = 0.0;
+        this.yPos = 0.0;
 
-        isDragging = false;
+        this.isDragging = false;
     }
 
     private static boolean isAnyButtonPressed() {
@@ -42,10 +42,10 @@ public class MouseListener {
     }
 
     public static MouseListener getInstance() {
-        if (instance == null)
-            instance = new MouseListener();
+        if (MouseListener.instance == null)
+            MouseListener.instance = new MouseListener();
 
-        return instance;
+        return MouseListener.instance;
     }
 
     public static void mousePosCallback(long window, double xPos, double yPos) {

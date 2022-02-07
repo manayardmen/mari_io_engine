@@ -3,18 +3,14 @@ package utils.general;
 public class SettingsManager {
     private static SettingsManager instance;
 
-    private SettingsManager() {
+    private SettingsManager() { }
 
-    }
-
-    private void tryReadSettings() {
-
-    }
+    private void tryReadSettings() { }
 
     public static SettingsManager getInstance() {
-        if (instance == null)
-            instance = new SettingsManager();
+        if (SettingsManager.instance == null)
+            SettingsManager.instance = new SettingsManager();
 
-        return instance;
+        return SettingsManager.instance;
     }
 }

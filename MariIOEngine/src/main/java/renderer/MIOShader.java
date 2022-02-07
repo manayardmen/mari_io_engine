@@ -1,8 +1,11 @@
 package renderer;
 
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import utils.Logger;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -15,6 +18,8 @@ public class MIOShader {
     private String fragmentSource;
 
     private final String filePath;
+
+    private final int mathBufferCapacity = 16;
 
     private int vertexId;
     private int fragmentId;
@@ -47,17 +52,17 @@ public class MIOShader {
             String secondPattern = source.substring(secondTypeIndex, secondEndOfLineIndex).trim();
 
             if (firstPattern.equals(VERTEX_TYPE)) {
-                vertexSource = splitString[1].trim();
+                this.vertexSource = splitString[1].trim();
             } else if (firstPattern.equals(FRAGMENT_TYPE)) {
-                fragmentSource = splitString[1].trim();
+                this.fragmentSource = splitString[1].trim();
             } else {
                 throw new IllegalStateException("Unexpected shader type:" + firstPattern + " in file:" + filePath);
             }
 
             if (secondPattern.equals(VERTEX_TYPE)) {
-                vertexSource = splitString[2].trim();
+                this.vertexSource = splitString[2].trim();
             } else if (secondPattern.equals(FRAGMENT_TYPE)) {
-                fragmentSource = splitString[2].trim();
+                this.fragmentSource = splitString[2].trim();
             } else {
                 throw new IllegalStateException("Unexpected shader type:" + secondPattern + " in file:" + filePath);
             }
@@ -65,34 +70,43 @@ public class MIOShader {
             if (firstPattern.equals(secondPattern))
                 throw new IllegalStateException("Unexpected shader types (duplicate types):" + firstPattern + " ," + secondPattern);
         } catch (IOException e) {
-            logger.write("Shader opening file failed:" + filePath);
+            this.logger.write("Shader opening file failed:" + filePath);
             e.printStackTrace();
         } catch (Exception e) {
-            logger.write("Shader general exception thrown:" + filePath);
+            this.logger.write("Shader general exception thrown:" + filePath);
             e.printStackTrace();
         }
     }
 
     public void compile() {
         try {
-            vertexId = loadShader(vertexSource, GL_VERTEX_SHADER);
-            fragmentId = loadShader(fragmentSource, GL_FRAGMENT_SHADER);
-            shaderProgramId = linkShaders(new int[] { vertexId, fragmentId });
+            this.vertexId = this.loadShader(this.vertexSource, GL_VERTEX_SHADER);
+            this.fragmentId = this.loadShader(this.fragmentSource, GL_FRAGMENT_SHADER);
+            this.shaderProgramId = linkShaders(new int[] { vertexId, fragmentId });
         } catch (IllegalStateException e) {
-            logger.write("Compile shader failed:" + this.filePath);
+            this.logger.write("Compile shader failed:" + this.filePath);
             e.printStackTrace();
         }
     }
 
     public void use() {
-        glUseProgram(shaderProgramId);
+        glUseProgram(this.shaderProgramId);
     }
 
     public void detach() {
         glUseProgram(0);
     }
 
-    public int getShaderProgram() { return shaderProgramId; }
+    public int getShaderProgram() {
+        return this.shaderProgramId;
+    }
+
+    public void uploadMat4f(String varName, Matrix4f mat4) {
+        int varLocation = glGetUniformLocation(this.shaderProgramId, varName);
+        FloatBuffer matBuffer = BufferUtils.createFloatBuffer(mathBufferCapacity);
+        mat4.get(matBuffer); // out in matBuffer
+        glUniformMatrix4fv(varLocation,false,matBuffer);
+    }
 
     private int loadShader(String shaderSrc, int shaderType) {
         // Load and compile shader
@@ -105,8 +119,8 @@ public class MIOShader {
         int success = glGetShaderi(shaderId, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {
             int len = glGetShaderi(shaderId, GL_INFO_LOG_LENGTH);
-            logger.write("Error occurred during shader compilation process:" + shaderType);
-            logger.write(glGetShaderInfoLog(shaderId, len));
+            this.logger.write("Error occurred during shader compilation process:" + shaderType);
+            this.logger.write(glGetShaderInfoLog(shaderId, len));
             throw new IllegalStateException("Error occurred during shader compilation process:" + shaderType);
         }
 
@@ -126,8 +140,8 @@ public class MIOShader {
         int success = glGetProgrami(shaderProgram, GL_LINK_STATUS);
         if (success == GL_FALSE) {
             int len = glGetProgrami(shaderProgram, GL_INFO_LOG_LENGTH);
-            logger.write("Error occurred during shaders link process");
-            logger.write(glGetProgramInfoLog(shaderProgram, len));
+            this.logger.write("Error occurred during shaders link process");
+            this.logger.write(glGetProgramInfoLog(shaderProgram, len));
             throw new IllegalStateException("Error occurred during shaders link process");
         }
 

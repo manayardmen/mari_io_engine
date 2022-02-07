@@ -1,6 +1,6 @@
 package utils.enums;
 
-public enum EScene {
+public enum Scenes {
     LEVEL_EDITOR,
     LEVEL
 }

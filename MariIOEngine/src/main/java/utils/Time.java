@@ -1,9 +1,9 @@
 package utils;
 
 public class Time {
-    // Точное время старта приложения
-    public static final float timeStarted = System.nanoTime();
+    // Application startup time
+    public static final float TIME_STARTED = System.nanoTime();
 
-    // Возвращаем пройденное время в секундах (из наносекунд в секунды)
-    public static float getTime() { return (float) ((System.nanoTime() - timeStarted) * 1E-9); }
+    // Elapsed time in seconds (from nanoseconds to seconds)
+    public static float getTime() { return (float) ((System.nanoTime() - TIME_STARTED) * 1E-9); }
 }

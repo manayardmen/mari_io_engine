@@ -13,10 +13,10 @@ public class KeyListener {
     private KeyListener() { }
 
     public static KeyListener getInstance() {
-        if (instance == null)
-            instance = new KeyListener();
+        if (KeyListener.instance == null)
+            KeyListener.instance = new KeyListener();
 
-        return instance;
+        return KeyListener.instance;
     }
 
     public static void keyCallback(long window, int key, int scanCode, int action, int mods) {

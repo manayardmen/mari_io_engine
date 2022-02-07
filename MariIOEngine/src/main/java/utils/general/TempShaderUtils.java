@@ -1,7 +1,9 @@
 package utils.general;
 
+import engine.Camera;
 import org.lwjgl.BufferUtils;
 import renderer.MIOShader;
+import utils.DefaultConstants;
 import utils.Logger;
 import utils.types.GenGLObjResult;
 
@@ -19,14 +21,14 @@ public class TempShaderUtils {
     private final Logger logger;
 
     private TempShaderUtils() {
-        logger = Logger.getInstance();
+        this.logger = Logger.getInstance();
     }
 
     public static TempShaderUtils getInstance() {
-        if (instance == null)
-            instance = new TempShaderUtils();
+        if (TempShaderUtils.instance == null)
+            TempShaderUtils.instance = new TempShaderUtils();
 
-        return instance;
+        return TempShaderUtils.instance;
     }
 
     public int loadShader(String shaderSrc, int shaderType) {
@@ -40,8 +42,8 @@ public class TempShaderUtils {
         int success = glGetShaderi(shaderId, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {
             int len = glGetShaderi(shaderId, GL_INFO_LOG_LENGTH);
-            logger.write("Error occurred during shader compilation process:" + shaderType);
-            logger.write(glGetShaderInfoLog(shaderId, len));
+            this.logger.write("Error occurred during shader compilation process:" + shaderType);
+            this.logger.write(glGetShaderInfoLog(shaderId, len));
             throw new IllegalStateException("Error occurred during shader compilation process:" + shaderType);
         }
 
@@ -61,8 +63,8 @@ public class TempShaderUtils {
         int success = glGetProgrami(shaderProgram, GL_LINK_STATUS);
         if (success == GL_FALSE) {
             int len = glGetProgrami(shaderProgram, GL_INFO_LOG_LENGTH);
-            logger.write("Error occurred during shaders link process");
-            logger.write(glGetProgramInfoLog(shaderProgram, len));
+            this.logger.write("Error occurred during shaders link process");
+            this.logger.write(glGetProgramInfoLog(shaderProgram, len));
             throw new IllegalStateException("Error occurred during shaders link process");
         }
 
@@ -123,8 +125,10 @@ public class TempShaderUtils {
         glUseProgram(0);
     }
 
-    public void glObjectsUpdate(MIOShader shader, int vaoId, int[] elementArray) {
+    public void glObjectsUpdate(MIOShader shader, int vaoId, int[] elementArray, Camera camera) {
         shader.use();
+        shader.uploadMat4f(DefaultConstants.PROJECTION_VAR_NAME, camera.getProjectionMatrix());
+        shader.uploadMat4f(DefaultConstants.VIEW_VAR_NAME, camera.getViewMatrix());
         glBindVertexArray(vaoId);
 
         glEnableVertexAttribArray(0);

@@ -2,6 +2,7 @@ package game;
 
 import engine.Scene;
 import game.utils.GameUtils;
+import org.joml.Vector2f;
 import renderer.MIOShader;
 import utils.DefaultConstants;
 import utils.Logger;
@@ -20,11 +21,11 @@ public class LevelEditorScene extends Scene {
     private MIOShader defaultShader;
 
     private final float[] vertexArray = {
-        // positions                // colors                                   indexes
-        0.5f, -0.5f, 0f,            1f, 0f, 0f, 1f, // Bottom right part        0
-        -0.5f, 0.5f, 0f,            0f, 1f, 0f, 1f, // Top left part            1
-        0.5f, 0.5f, 0f,             1f, 0f, 1f, 1f, // Top right part           2
-        -0.5f, -0.5f, 0f,           1f, 1f, 0f, 1f  // Bottom left part         3
+        // positions                    // colors                                   indexes
+        100.5f, -0.5f, 0f,              1f, 0f, 0f, 1f, // Bottom right part        0
+        -0.5f, 100.5f, 0f,              0f, 1f, 0f, 1f, // Top left part            1
+        100.5f, 100.5f, 0f,             1f, 0f, 1f, 1f, // Top right part           2
+        -0.5f, -0.5f, 0f,               1f, 1f, 0f, 1f  // Bottom left part         3
     };
 
     // In counterclockwise order
@@ -34,15 +35,15 @@ public class LevelEditorScene extends Scene {
     };
 
     public LevelEditorScene() {
-        logger = Logger.getInstance();
-        gameUtils = GameUtils.getInstance();
-        shaderUtils = TempShaderUtils.getInstance();
+        this.logger = Logger.getInstance();
+        this.gameUtils = GameUtils.getInstance();
+        this.shaderUtils = TempShaderUtils.getInstance();
     }
 
     @Override
     public void init() {
-        defaultShader = new MIOShader(DefaultConstants.SHADERS_PATH + "default.glsl");
-        defaultShader.compile();
+        this.defaultShader = new MIOShader(DefaultConstants.SHADERS_PATH + "default.glsl");
+        this.defaultShader.compile();
 
         // Generate VAO, VBO, EBO objects
         int positionsSize = 3;
@@ -50,14 +51,19 @@ public class LevelEditorScene extends Scene {
         int floatSizeBytes = 4;
 
         GenGLObjResult res = shaderUtils.genGLObjects(vertexArray, elementArray, positionsSize, colorSize, floatSizeBytes);
-        vaoId = res.vaoId;
-        vboId = res.vboId;
-        eboId = res.eboId;
+        this.vaoId = res.vaoId;
+        this.vboId = res.vboId;
+        this.eboId = res.eboId;
     }
 
     @Override
     public void update(float deltaTime) {
-        shaderUtils.glObjectsUpdate(defaultShader, vaoId, elementArray);
+        // TODO: Remove testing camera moving
+        Vector2f currentCamPos = this.camera.getPosition();
+        this.camera.updatePositionX(currentCamPos.x - deltaTime * 25f);
+        this.camera.updatePositionY(currentCamPos.y - deltaTime  * 25f);
+
+        this.shaderUtils.glObjectsUpdate(this.defaultShader, this.vaoId, this.elementArray, this.camera);
     }
 
     @Override

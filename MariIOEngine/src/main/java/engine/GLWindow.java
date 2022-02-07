@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL;
 import utils.DefaultConstants;
 import utils.Logger;
 import utils.Time;
-import utils.enums.EScene;
+import utils.enums.Scenes;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -18,7 +18,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class GLWindow {
     private static GLWindow instance = null;
 
-    private static Scene currentScene = null;
+    private Scene currentScene = null;
 
     private final int width;
     private final int height;
@@ -36,48 +36,48 @@ public class GLWindow {
     private final SceneLinking sceneLinking;
 
     private GLWindow() {
-        width = DefaultConstants.WINDOW_WIDTH;
-        height = DefaultConstants.WINDOW_HEIGHT;
+        this.width = DefaultConstants.WINDOW_WIDTH;
+        this.height = DefaultConstants.WINDOW_HEIGHT;
 
-        title = DefaultConstants.APP_TITLE + DefaultConstants.TITLE_DIVIDER + GameConstants.GAME_TITLE;
+        this.title = DefaultConstants.APP_TITLE + DefaultConstants.TITLE_DIVIDER + GameConstants.GAME_TITLE;
 
-        logger = Logger.getInstance();
+        this.logger = Logger.getInstance();
 
-        r = 0f;
-        g = 0f;
-        b = 0f;
-        a = 0f;
+        this.r = 0f;
+        this.g = 0f;
+        this.b = 0f;
+        this.a = 0f;
 
-        sceneLinking = SceneLinking.getInstance();
+        this.sceneLinking = SceneLinking.getInstance();
     }
 
-    public static void changeScene(EScene sceneIndex) {
+    public void changeScene(Scenes sceneIndex) {
         Scene targetScene = getInstance().sceneLinking.getScene(sceneIndex);
         if (targetScene == null)
             throw new IllegalStateException("Error occurred while changing scene, scene not found, scene index:" + sceneIndex);
 
         targetScene.init();
 
-        if (currentScene != null)
-            currentScene.destroy();
+        if (this.currentScene != null)
+            this.currentScene.destroy();
 
-        currentScene = targetScene;
+        this.currentScene = targetScene;
     }
 
     public static GLWindow getInstance() {
-        if (instance == null)
-            instance = new GLWindow();
+        if (GLWindow.instance == null)
+            GLWindow.instance = new GLWindow();
 
-        return instance;
+        return GLWindow.instance;
     }
 
     public void run() {
-        logger.write("LWJGL Version: " + Version.getVersion());
+        this.logger.write("LWJGL Version: " + Version.getVersion());
 
-        init();
-        loop();
+        this.init();
+        this.loop();
 
-        if (currentScene != null)
+        if (this.currentScene != null)
             currentScene.destroy();
 
         currentScene = null;
@@ -93,7 +93,7 @@ public class GLWindow {
             ec.free();
     }
 
-    public void init() {
+    private void init() {
         // Subscribe to handle any errors and print it
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -108,36 +108,36 @@ public class GLWindow {
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
         // Create our window
-        glfwWindowId = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
-        if (glfwWindowId == NULL)
+        this.glfwWindowId = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
+        if (this.glfwWindowId == NULL)
             throw new IllegalStateException("Error occurred while creating GL Window");
 
         // Setup all handlers
-        glfwSetCursorPosCallback(glfwWindowId, MouseListener::mousePosCallback);
-        glfwSetMouseButtonCallback(glfwWindowId, MouseListener::mouseButtonCallback);
-        glfwSetScrollCallback(glfwWindowId, MouseListener::mouseScrollCallback);
-        glfwSetKeyCallback(glfwWindowId, KeyListener::keyCallback);
+        glfwSetCursorPosCallback(this.glfwWindowId, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(this.glfwWindowId, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(this.glfwWindowId, MouseListener::mouseScrollCallback);
+        glfwSetKeyCallback(this.glfwWindowId, KeyListener::keyCallback);
         // TODO: Create Joystick or Gamepad callback
 
         // OpenGL context
-        glfwMakeContextCurrent(glfwWindowId);
+        glfwMakeContextCurrent(this.glfwWindowId);
 
         // Enable V-Sync (lock FPS to screen update frequency)
         glfwSwapInterval(1);
 
         // Show the window
-        glfwShowWindow(glfwWindowId);
+        glfwShowWindow(this.glfwWindowId);
 
         // Important for OpenGL with GLFW context
         // Binds for OpenGL (on C-Language)
         GL.createCapabilities();
 
-        // TODO: Move this logic to game instance
+        // TODO: Move this logic to game instance <- get start scene
         // Move to main scene
-        changeScene(DefaultConstants.START_SCENE);
+        this.changeScene(DefaultConstants.START_SCENE);
     }
 
-    public void loop() {
+    private void loop() {
         float beginTime = Time.getTime();
         float endTime;
         float deltaTime = DefaultConstants.INITIAL_FRAME_DELTA_TIME;
@@ -146,12 +146,12 @@ public class GLWindow {
             // Throw any events to our handlers
             glfwPollEvents();
 
-            glClearColor(r, g, b, a);
+            glClearColor(this.r, this.g, this.b, this.a);
             glClear(GL_COLOR_BUFFER_BIT);
 
             // Updating current scene
-            if (deltaTime >= 0 && currentScene != null)
-                currentScene.update(deltaTime);
+            if (deltaTime >= 0 && this.currentScene != null)
+                this.currentScene.update(deltaTime);
 
             glfwSwapBuffers(glfwWindowId);
 
